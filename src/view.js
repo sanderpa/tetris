@@ -19,13 +19,26 @@ export default class View {
         this.canvas.height = this.height
         this.context = this.canvas.getContext('2d')
 
-        this.blockWidth = this.width / columns
-        this.blockHeight = this.height / rows
+        this.playfieldBorderWidth = 4
+        this.playfieldX = this.playfieldBorderWidth
+        this.playfieldY = this.playfieldBorderWidth
+        this.playfieldWidth = this.width * 2 / 3
+        this.playfieldHeight = this.height
+        this.playfieldInnerWidth = this.playfieldWidth - this.playfieldBorderWidth * 2
+        this.playfieldInnerHeight = this.playfieldHeight  - this.playfieldBorderWidth * 2
+
+        this.blockWidth = this.playfieldInnerWidth / columns
+        this.blockHeight = this.playfieldInnerHeight / rows
+
+        this.panelX = this.playfieldWidth + 10
+        this.panelY = 0
+        this.panelWidth = this.width / 3
+        this.panelHeight =  this.height
 
         this.element.appendChild(this.canvas)
     }
 
-    renderPlayField(playfield) {
+    renderPlayField({ playfield }) {
         for (let y = 0; y < playfield.length; y++) {
             const line = playfield[y];
 
@@ -33,10 +46,19 @@ export default class View {
                 const block = line[x]
 
                 if (block) {
-                   this.renderBlock(x * this.blockWidth, y * this.blockHeight, this.blockWidth, this.blockHeight, View.colors[block]) 
+                   this.renderBlock(
+                       this.playfieldX + (x * this.blockWidth), 
+                       this.playfieldY + (y * this.blockHeight), 
+                       this.blockWidth, 
+                       this.blockHeight, 
+                       View.colors[block]
+                    ) 
                 }
             }
         }
+        this.context.strokeStyle = 'wheat'
+        this.context.lineWidth = this.playfieldBorderWidth
+        this.context.strokeRect(0, 0, this.playfieldWidth, this.playfieldHeight)
     }
 
     renderBlock(x, y, width, height, color) {
@@ -52,9 +74,40 @@ export default class View {
         this.context.clearRect(0, 0, this.width, this.height)
     }
 
-    render ({ playfield }){
+    renderGamePanel({level, score, lines, nextPiece}) {
+        this.context.textAlign = 'start'
+        this.context.textBaseline = 'top'
+        this.context.fillStyle ='white'
+        this.context.font = '16px "Orbitron"'
+        
+        this.context.fillText(`Score: ${score}`, this.panelX, this.panelY + 0)
+        this.context.fillText(`Lines: ${lines}`, this.panelX, this.panelY + 30)
+        this.context.fillText(`Level: ${level}`, this.panelX, this.panelY + 60)
+        this.context.fillText('Next figure:', this.panelX, this.panelY + 100)
+
+        for (let y = 0; y < nextPiece.blocks.length; y++) {
+            for (let x = 0; x < nextPiece.blocks[y].length; x++) {
+                const block = nextPiece.blocks[y][x]
+
+                if(block) {
+                    this.renderBlock(
+                        this.panelX + (x * this.blockWidth * 0.6),
+                        this.panelY + 110 + (y * this.blockHeight * 0.6),
+                        this.blockWidth * 0.6, 
+                        this.blockHeight * 0.6,
+                        View.colors[block]
+                    )
+                }
+                
+            }
+            
+        }
+    }
+
+    render (state){
         this.clearScreen()
-        this.renderPlayField(playfield)
+        this.renderPlayField(state)
+        this.renderGamePanel(state)
     }
 
 }
