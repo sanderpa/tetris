@@ -70,10 +70,6 @@ export default class View {
         this.context.strokeRect(x, y, width, height )
     }
 
-    clearScreen() {
-        this.context.clearRect(0, 0, this.width, this.height)
-    }
-
     renderGamePanel({level, score, lines, nextPiece}) {
         this.context.textAlign = 'start'
         this.context.textBaseline = 'top'
@@ -104,10 +100,46 @@ export default class View {
         }
     }
 
-    render (state){
+    renderStartScreen() {
+        this.context.fillStyle = 'wheat'
+        this.context.font = '20px "Orbitron"'
+        this.context.textAlign = 'center'
+        this.context.textBaseline = 'middle'
+        this.context.fillText('Press ENTER to Start', this.width / 2, this.height / 2)
+    }
+
+    renderPauseScreen() {
+        this.context.fillStyle = 'rgba(0, 0, 0, 0.75)'
+        this.context.fillRect(0, 0, this.width, this.height)
+
+        this.context.fillStyle = 'wheat'
+        this.context.font = '20px "Orbitron"'
+        this.context.textAlign = 'center'
+        this.context.textBaseline = 'middle'
+        this.context.fillText('Press ENTER to Resume', this.width / 2, this.height / 2)
+    }
+
+    renderGameOver({ score }) {
+        this.clearScreen()
+
+        this.context.fillStyle = 'wheat'
+        this.context.font = '20px "Orbitron"'
+        this.context.textAlign = 'center'
+        this.context.textBaseline = 'middle'
+        this.context.fillText('GAME OVER', this.width / 2, this.height / 2 - 60)
+        this.context.fillText(`Score ${score}`, this.width / 2, this.height / 2)
+        this.context.fillText('Press ENTER to Restart', this.width / 2, this.height / 2 + 60)
+
+    }
+
+    renderMainScreen(state) {
         this.clearScreen()
         this.renderPlayField(state)
         this.renderGamePanel(state)
+    }
+
+    clearScreen() {
+        this.context.clearRect(0, 0, this.width, this.height)
     }
 
 }

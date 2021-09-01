@@ -8,6 +8,7 @@ export default class Game {
 
     score = 0
     lines = 0
+    topOut = false
     playfield = this.createPlayfield()
     activePiece = this.createPiece()
     nextPiece = this.createPiece()
@@ -138,6 +139,8 @@ export default class Game {
     }
 
     movePieceDown() {
+        if (this.topOut) { return }
+
         this.activePiece.y += 1
 
         if (this.isPieceOnRightPlace()) {
@@ -146,6 +149,10 @@ export default class Game {
             const deletedLines = this.deleteCompleteLines()
             this.getScore(deletedLines)
             this.updatePieces()
+        }
+
+        if (this.isPieceOnRightPlace()) {
+            this.topOut = true
         }
     }
 
@@ -214,8 +221,18 @@ export default class Game {
             level: this.level,
             lines: this.lines,
             nextPiece: this.nextPiece,
-            playfield
+            playfield,
+            isGameOver : this.topOut
         }
+    }
+
+    reset() {
+        this.score = 0
+        this.lines = 0
+        this.topOut = false
+        this.playfield = this.createPlayfield()
+        this.activePiece = this.createPiece()
+        this.nextPiece = this.createPiece()
     }
 
     deleteCompleteLines() {
